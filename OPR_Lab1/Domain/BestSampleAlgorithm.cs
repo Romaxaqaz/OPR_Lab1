@@ -82,7 +82,7 @@ namespace OPR_Lab1.Domain
                 double randomAngle = random.Next(0, 360);
                 var X = point.X + (step * Math.Sin(randomAngle));
                 var Y = point.Y + (step * Math.Cos(randomAngle));
-
+                //save x,y,result function and angle for work step
                 PointList.Add(new ExtendedPoint(
                     X,
                     Y,
@@ -118,8 +118,11 @@ namespace OPR_Lab1.Domain
             {
                 try
                 {
+                    //generate vectrors
                     GenerateVectors(testStep, Point);
+                    //search min value function
                     var bestDot = PointList.Find(x => x.ValueFunction == PointList.Min(y => y.ValueFunction));
+                    //working step in the direction of point
                     Point = StartWorkStep(bestDot);
                     result = Point.ValueFunction;
                     PointList.Clear();
