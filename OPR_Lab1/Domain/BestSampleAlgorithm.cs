@@ -9,6 +9,7 @@ using System.Drawing;
 
 namespace OPR_Lab1.Domain
 {
+    [Serializable]
     public class BestSampleAlgorithm
     {
         private ExtendedPoint Point;
@@ -22,6 +23,14 @@ namespace OPR_Lab1.Domain
         private int quantitativeSolutionsSteps = 3;
         #endregion
 
+        /// <summary>
+        /// End Point params
+        /// </summary>
+        public ExtendedPoint EndPoint { get { return Point; } set { Point = value; } }
+        /// <summary>
+        /// Function string
+        /// </summary>
+        public string Functioon { get { return function; } set { function = value; } }
         /// <summary>
         /// Test step. Default = 1;
         /// </summary>
@@ -49,7 +58,10 @@ namespace OPR_Lab1.Domain
         /// <param name="function">Function</param>
         /// <param name="startPoint">Start X and Y </param>
         /// <param name="testSstep">Test step. Default==2</param>
-        public BestSampleAlgorithm(string function, Point startPoint, int testSstep)
+
+        public BestSampleAlgorithm() { }
+
+        public BestSampleAlgorithm(string function, Point startPoint, double testSstep)
         {
             Point.X = startPoint.Y;
             Point.Y = startPoint.Y;

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace OPR_Lab1.Domain
 {
+    [Serializable]
     public struct ExtendedPoint
     {
         public double X { get; set; }
