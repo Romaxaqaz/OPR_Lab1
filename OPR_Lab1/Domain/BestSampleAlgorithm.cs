@@ -77,25 +77,11 @@ namespace OPR_Lab1.Domain
             Random random = new Random(DateTime.Now.Millisecond);
             for (int i = 0; i < countVectrors; i++)
             {
-<<<<<<< HEAD
                 double randomAngle = random.NextDouble() + random.Next(-3, 3);
                 var x = point.X + (step * Math.Cos(randomAngle));
                 var y = point.Y + (step * Math.Sin(randomAngle));
 
                 resultList.Add(new ExtendedPoint(x, y, ResultFunction(x, y), randomAngle));
-=======
-                Random random = new Random(DateTime.Now.Millisecond);
-                double randomAngle = random.Next(0, 360);
-                var X = point.X + (step * Math.Sin(randomAngle));
-                var Y = point.Y + (step * Math.Cos(randomAngle));
-                //save x,y,result function and angle for work step
-                PointList.Add(new ExtendedPoint(
-                    X,
-                    Y,
-                    ResultFunction(X, Y),
-                    randomAngle
-                    ));
->>>>>>> origin/master
             }
 
             return resultList;
@@ -128,23 +114,7 @@ namespace OPR_Lab1.Domain
             point.ValueFunction = ResultFunction(point.X, point.Y);
             try
             {
-<<<<<<< HEAD
                 do
-=======
-                try
-                {
-                    //generate vectrors
-                    GenerateVectors(testStep, Point);
-                    //search min value function
-                    var bestDot = PointList.Find(x => x.ValueFunction == PointList.Min(y => y.ValueFunction));
-                    //working step in the direction of point
-                    Point = StartWorkStep(bestDot);
-                    result = Point.ValueFunction;
-                    PointList.Clear();
-                    count++;
-                }
-                catch (Bestcode.MathParser.ParserException)
->>>>>>> origin/master
                 {
                     var vectors = GenerateVectors(actualTestStep, point);
                     var bestDot = vectors.Where(x => x.ValueFunction == vectors.Min(y => y.ValueFunction)).First();
