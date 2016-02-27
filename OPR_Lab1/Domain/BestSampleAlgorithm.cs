@@ -18,9 +18,8 @@ namespace OPR_Lab1.Domain
         private string function = string.Empty;
         private double testStep = 1;
         private double workStep = 0;
-        private double result = 0;
         private int countVectrors = 5;
-        private int quantitativeSolutionsSteps = 3;
+        private int quantitativeSolutionsSteps = 20;
         #endregion
 
         /// <summary>
@@ -61,10 +60,8 @@ namespace OPR_Lab1.Domain
 
         public BestSampleAlgorithm() { }
 
-        public BestSampleAlgorithm(string function, Point startPoint, double testSstep)
+        public BestSampleAlgorithm(string function, double testSstep)
         {
-            Point.X = startPoint.Y;
-            Point.Y = startPoint.Y;
             this.function = function;
             this.testStep = testSstep;
         }
@@ -74,22 +71,20 @@ namespace OPR_Lab1.Domain
         /// </summary>
         /// <param name="step"></param>
         /// <param name="point"></param>
-        private void GenerateVectors(double step, ExtendedPoint point)
+        private IList<ExtendedPoint> GenerateVectors(double step, ExtendedPoint point)
         {
+            var resultList = new List<ExtendedPoint>();
+            Random random = new Random(DateTime.Now.Millisecond);
             for (int i = 0; i < countVectrors; i++)
             {
-                Random random = new Random(DateTime.Now.Millisecond);
-                double randomAngle = random.Next(0, 360);
-                var X = point.X + (step * Math.Sin(randomAngle));
-                var Y = point.Y + (step * Math.Cos(randomAngle));
+                double randomAngle = random.NextDouble() + random.Next(-3, 3);
+                var x = point.X + (step * Math.Cos(randomAngle));
+                var y = point.Y + (step * Math.Sin(randomAngle));
 
-                PointList.Add(new ExtendedPoint(
-                    X,
-                    Y,
-                    ResultFunction(X, Y),
-                    randomAngle
-                    ));
+                resultList.Add(new ExtendedPoint(x, y, ResultFunction(x, y), randomAngle));
             }
+
+            return resultList;
         }
 
         /// <summary>
@@ -97,13 +92,14 @@ namespace OPR_Lab1.Domain
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        private ExtendedPoint StartWorkStep(ExtendedPoint point)
+        private ExtendedPoint MakeWorkStep(ExtendedPoint point, ExtendedPoint bestDot)
         {
             if (workStep == 0) workStep = testStep * 2;
-            var X = point.X + (workStep * Math.Sin(point.Angle));
-            var Y = point.Y + (workStep * Math.Cos(point.Angle));
-            point.X = X;
-            point.Y = Y;
+            var x = point.X + (workStep * Math.Cos(bestDot.Angle));
+            var y = point.Y + (workStep * Math.Sin(bestDot.Angle));
+            point.X = x;
+            point.Y = y;
+            point.ValueFunction = ResultFunction(point.X, point.Y);
             return point;
         }
 
@@ -111,28 +107,36 @@ namespace OPR_Lab1.Domain
         /// Start solution
         /// </summary>
         /// <returns> Result solution</returns>
-        public double StartSolution()
+        public double StartSolution(ExtendedPoint point)
         {
             int count = 0;
-            do
+            var actualTestStep = testStep;
+            point.ValueFunction = ResultFunction(point.X, point.Y);
+            try
             {
-                try
+                do
                 {
-                    GenerateVectors(testStep, Point);
-                    var bestDot = PointList.Find(x => x.ValueFunction == PointList.Min(y => y.ValueFunction));
-                    Point = StartWorkStep(bestDot);
-                    result = Point.ValueFunction;
-                    PointList.Clear();
-                    count++;
+                    var vectors = GenerateVectors(actualTestStep, point);
+                    var bestDot = vectors.Where(x => x.ValueFunction == vectors.Min(y => y.ValueFunction)).First();
+                    if (bestDot.ValueFunction > point.ValueFunction)
+                    {
+                        actualTestStep = actualTestStep / 2;
+                    }
+                    else
+                    {
+                        point = MakeWorkStep(point, bestDot);
+                        count++;
+                    }
                 }
-                catch (Bestcode.MathParser.ParserException)
-                {
-                    MessageBox.Show("Incorrect input function");
-                    break;
-                }
+                while (actualTestStep > 0.001);
             }
-            while (count < quantitativeSolutionsSteps);
-            return result;
+            catch (Bestcode.MathParser.ParserException)
+            {
+                MessageBox.Show("Incorrect input function");
+            }
+
+            EndPoint = point;
+            return point.ValueFunction;
         }
 
         /// <summary>
@@ -147,7 +151,7 @@ namespace OPR_Lab1.Domain
             parser.Expression = function;
             parser.X = x;
             parser.Y = y;
-            return parser.ValueAsDouble; ;
+            return parser.ValueAsDouble;
         }
     }
 }

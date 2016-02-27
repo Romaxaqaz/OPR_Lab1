@@ -25,25 +25,28 @@ namespace OPR_Lab1
             best = GetObjectBestSampleAlgorithm();
             if (best != null) SetControlParams(best);
             if (best == null) SaveCheckBox.Checked = false;
- 
+
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            Random random = new Random(DateTime.Now.Millisecond);
+
             string function = FunctionTextBox.Text;
-            double testStep = double.Parse(TestStepInputTextBox.Text.Replace(".",","));
+            double testStep = double.Parse(TestStepInputTextBox.Text.Replace(".", ","));
 
-            Point point = new Point();
-            point.X = int.Parse(XinputTextBox.Text);
-            point.Y = int.Parse(YinputTextBox.Text); ;
+            ExtendedPoint point = new ExtendedPoint();
+            point.X = random.Next(-10, 10);
+            point.Y = random.Next(-10, 10);
 
-            best = new BestSampleAlgorithm(function, point, testStep);
-            best.WorkStep = int.Parse(WorkStepInputTextBox.Text);
+            best = new BestSampleAlgorithm(function, testStep);
             best.QuantityVectrors = int.Parse(VectorsInputTextBox.Text);
 
-            var result = best.StartSolution();
+            var result = best.StartSolution(point);
             OutPutXLabel.Text = best.EndPoint.X.ToString();
             OutPutYLabel.Text = best.EndPoint.Y.ToString();
+            XinputLabel.Text = point.X.ToString();
+            YinputLabel.Text = point.Y.ToString();
             ResultOutputLable.Text = result.ToString();
         }
 
@@ -92,11 +95,13 @@ namespace OPR_Lab1
         private void SetControlParams(BestSampleAlgorithm best)
         {
             FunctionTextBox.Text = best.Functioon;
-            XinputTextBox.Text = "1";
-            YinputTextBox.Text = "1";
             TestStepInputTextBox.Text = best.TestStep.ToString();
-            WorkStepInputTextBox.Text = best.WorkStep.ToString();
             VectorsInputTextBox.Text = best.QuantityVectrors.ToString();
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }
